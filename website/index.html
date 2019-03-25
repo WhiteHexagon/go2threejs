@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
+    <title>WebGL</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            font-family: Monospace;
+            background-color: #f0f0f0;
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+    <script src="wasm_exec1.12.js"></script>
+    <script src="three.min.js"></script>
+</head>
+
+<body id="body">
+    <script>
+        console.log("load wasm")
+        const go = new Go();
+        //correct way requires website to support wasm MIME type:
+        // WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+        //     go.run(result.instance);
+        // });
+        //so this isn't even a polyfill situation, just the simplest way to make it work for now
+        fetch('app.wasm').then(response =>
+            response.arrayBuffer()
+        ).then(bytes =>
+            WebAssembly.instantiate(bytes, go.importObject)
+        ).then(result => {
+            go.run(result.instance);
+            console.log("wasm loaded?");
+        }).catch(error => {
+            console.log('failed: ', error);
+        });
+    </script>
+    <div id="app" style="float:left; width:100%; height:100%;">
+</body>
+
+</html>
